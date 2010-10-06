@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Script to convert all images in current folder to a phone resolution
+# removes existing dorectories portrait and landscape in current directory
+
+if [[ $# -ne 2 ]];then
+    echo "usage : $0 <longerside> <shortersize>"
+    echo "  ex  : $0 480 320"
+    exit 1
+fi
+
+rm -r portrait landscape
+mkdir portrait landscape
+
+wid=$1
+hei=$2
+
+for a in *jpg;
+do
+    w=`identify -format "%w" "$a"`
+    h=`identify -format "%h" "$a"`
+    #echo $w $h
+    if [[ $w -ge $h ]];then
+        echo " >landscape/$a"
+        convert -geometry "${wid}x${hei}" -quality 80 "$a" "landscape/$a"
+    else
+        echo " >portrait/$a"
+        convert -geometry "${hei}x${wid}" -quality 80 "$a" "portrait/$a"
+    fi
+done
