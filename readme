@@ -4,12 +4,16 @@ Various files in this repo.
 
 Description: A script to resize all images in a folder for your phone/digital frame screen.
 
-Requirements: Requires imagemagick to be installed on the system (apt-get install imagemagick)
+Requirements: Requires imagemagick to be installed on the system (apt-get install imagemagick). Place the file phoneresizer under /usr/local/bin (or someother entry in $PATH)
 
 Usage: cd into the folder, and run 
+
+  phoneresizer <longerside> <shortersize> [-cbz]
 
   phoneresizer 480 320
 
 480/320 represent the longer shorter side on the screen. Two directories will be created: portrait and landscape. Images would be moved in there depending on their resolution, and they will be resized to the specified size.
 
+  phoneresizer 480 320 -cbz
 
+This will create cbz files from the two generated directories (and delete the directories).

@@ -3,14 +3,17 @@
 # Script to convert all images in current folder to a phone resolution
 # removes existing dorectories portrait and landscape in current directory
 
-if [[ $# -ne 2 ]];then
-    echo "usage : $0 <longerside> <shortersize>"
+if [[ $# -lt 2 ]];then
+    echo "usage : $0 <longerside> <shortersize> [-cbz]"
     echo "  ex  : $0 480 320"
     exit 1
 fi
 
-rm -r portrait landscape
+rm -rf portrait landscape
 mkdir portrait landscape
+
+cbz=0
+[[ $3 == "-cbz" ]] && cbz=1
 
 wid=$1
 hei=$2
@@ -28,3 +31,16 @@ do
         convert -geometry "${hei}x${wid}" -quality 80 "$a" "portrait/$a"
     fi
 done
+
+if [[ "$cbz" == "1" ]];then
+    curdir=`pwd`
+    onlydir=`basename $curdir` 
+    cd portrait;
+    zip -9 "${onlydir}_portrait.cbz" *
+    mv *.cbz ..
+    cd ../landscape
+    zip -9 "${onlydir}_landscape.cbz" *
+    mv *.cbz ..
+    cd ..
+    rm -r landscape portrait
+fi
