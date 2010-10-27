@@ -1,11 +1,5 @@
 #!/usr/bin/python
 
-#This is the backend commandline script for plugin management
-
-#v0.1 - Initial version
-#v0.2 - Aug 13.. many improvements including upgrade
-#v0.3 - Sep 1.. delorean-gen and -find
-
 import sys
 import os
 import time
@@ -19,7 +13,7 @@ def d_print(arg):
 	if DEBUG==1:
 		print arg
 
-def mail(serverURL="smtp.nexenta.com",sender='Nexenta Informer <devnull@nexenta.com>', to=[], subject='', text=''):
+def mail(serverURL="smtp.example.com",sender='Informer <devnull@example.com>', to=[], subject='', text=''):
 	headers = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (sender, ",".join(to), subject)
 	message = headers + text
 	mailServer = smtplib.SMTP(serverURL)
