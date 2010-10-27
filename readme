@@ -17,3 +17,11 @@ Usage: cd into the folder, and run
   phoneresizer 480 320 -cbz
 
 This will create cbz files from the two generated directories (and delete the directories).
+
+2. repodiff.py
+
+Description: Script to compare two apt repositories, and figure out which packages are new/old
+
+Requirement: Python
+
+Usage: Run ./repodiff.py to see usage.
