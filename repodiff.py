@@ -44,7 +44,7 @@ def changes_files(repo):
 						#d_print ("Found " + fnamefields[0] + " : " + fnamefields[1])
 						#d_print ("md5sum " + fields[1])
 	                                else:
-	                                        print ("Warning: multiple instance of file " + fnamefields[0] + "; Previous version = " + installed_debs[fnamefields[0]])
+	                                        print ("Warning: multiple instance of file " + fnamefields[0] + "; Previous version = " + installed_debs[fnamefields[0]][0])
 	return installed_debs
 
 
