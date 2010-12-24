@@ -40,7 +40,7 @@ Glance was written to be as simple to use as wordweb on windows. It is a fronten
 
  * Lookup a word by simply selecting it in browser/text-editor/ebook reader and hitting F7.
  * Hit F7 anytime to launch.
- * Search for prefix/suffixed words with *. Ex: *arch, matri*, *
+ * Search for prefix/suffixed words with *. Ex: *arch, matri*, *morph*
  * Provide definition of the word, etymology (along with meaning of the root words), Similar words, usage, etc. These depend on the dicitonaries installed.
 
 Setup:
