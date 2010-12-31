@@ -21,6 +21,8 @@ def sanitize_string(clipstr):
     for a in clipstr:
         if a.isalnum() or a in "'-.,* ":
             b = b + a
+    #trim whitespaces
+    b = b.strip()
     if len(b) > 50:
         return ""
     else:
