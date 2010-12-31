@@ -16,6 +16,16 @@ def run_program(cmd):
     exitvalue=fd.close()
     return (output,exitvalue)
 
+def sanitize_string(clipstr):
+    b=""
+    for a in clipstr:
+        if a.isalnum() or a in "'-.,*":
+            b = b + a
+    if len(b) > 50:
+        return ""
+    else:
+        return b
+
 helpmsg="Enter a word to lookup definition.\n\nTry an exact word, ex: 'Monarch', or suffix/prefix, ex: '*arch' or 'mon*'\n\nIf you find this simple program useful, and have suggestions to make it better, let Anil know."
 
 class LookupWindow:
@@ -24,6 +34,7 @@ class LookupWindow:
 
     def filldef(self, widget, dbuffer):
         word=widget.get_text()
+        word=sanitize_string(word)
         if word=="":
             return
 	option=""
@@ -33,9 +44,9 @@ class LookupWindow:
 		option = " -s suffix "
 	if len(word)>2 and word[-1]=="*" and word[:1]=="*" :
 		option = " -s substring "
-        content,exitval=run_program("dict " + option + "'" + word + "'")
+        content,exitval=run_program("dict " + option + '"' + word + '" 2>&1')
         if exitval != None:
-		content="Not found!\n\n" + helpmsg
+            content="Nothing found!\n--\n" + content + "\n--\n" + helpmsg
         dbuffer.set_text(content) 
 
     def __init__(self):
@@ -75,29 +86,25 @@ class LookupWindow:
         table.show()
         
         out,exitval=run_program("xsel")
-        if out=="":
-           out=""
-           content=helpmsg
-        else:
-           content,exitval=run_program("dict '"+out+"'")
-           if exitval != None:
-               content = "No definition found!"
-
-	defview = gtk.TextView(buffer=None)
+        out=sanitize_string(out)
+        
+        defview = gtk.TextView(buffer=None)
         dbuffer = defview.get_buffer()
-	entrybox = gtk.Entry()
-	entrybox.set_text(out)
-	entrybox.connect_object("activate", self.filldef, entrybox, dbuffer)
-	table.attach(entrybox, 0, 1, 0, 1, yoptions=gtk.SHRINK, xpadding=10, ypadding=5)
-	entrybox.show()
+        entrybox = gtk.Entry()
+        entrybox.set_text(out)
+        entrybox.connect_object("activate", self.filldef, entrybox, dbuffer)
+        table.attach(entrybox, 0, 1, 0, 1, yoptions=gtk.SHRINK, xpadding=10, ypadding=5)
+        entrybox.show()
 	
         defview.set_justification(gtk.JUSTIFY_LEFT)
         defview.set_editable(False)
-	defview.set_left_margin(10)
-	defview.set_right_margin(10)
-        dbuffer.set_text(content)
+        defview.set_left_margin(10)
+        defview.set_right_margin(10)
+        dbuffer.set_text(helpmsg)
         table.attach(defview, 0, 1, 1, 2)
         defview.show()
+
+        self.filldef(entrybox,dbuffer)
 
 
         # Add a "close" button to the bottom of the dialog
