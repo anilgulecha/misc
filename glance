@@ -19,7 +19,7 @@ def run_program(cmd):
 def sanitize_string(clipstr):
     b=""
     for a in clipstr:
-        if a.isalnum() or a in "'-.,*":
+        if a.isalnum() or a in "'-.,* ":
             b = b + a
     if len(b) > 50:
         return ""
