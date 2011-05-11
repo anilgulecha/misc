@@ -87,13 +87,12 @@ class LookupWindow:
         scrolled_window.add_with_viewport(table)
         table.show()
         
-        out,exitval=run_program("xsel")
-        out=sanitize_string(out)
+	selected_word=gtk.Clipboard(selection="PRIMARY").wait_for_text()
         
         defview = gtk.TextView(buffer=None)
         dbuffer = defview.get_buffer()
         entrybox = gtk.Entry()
-        entrybox.set_text(out)
+        entrybox.set_text(selected_word)
         entrybox.connect_object("activate", self.filldef, entrybox, dbuffer)
         table.attach(entrybox, 0, 1, 0, 1, yoptions=gtk.SHRINK, xpadding=10, ypadding=5)
         entrybox.show()
