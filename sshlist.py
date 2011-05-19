@@ -34,17 +34,15 @@ Author: anil.verve@gmail.com
 http://www.gulecha.org""")
         md.run()
         md.destroy()
-    else :
+    elif buf == "_refresh":
+        newmenu = build_menu()
+        ind.set_menu(newmenu)
+    else:
         print "gnome-terminal -x ssh " + buf
         run_program("gnome-terminal -x ssh " + buf)
 
-if __name__ == "__main__":
-    ind = appindicator.Indicator ("sshlist",
-                                "gnome-netstatus-tx",
-                                appindicator.CATEGORY_APPLICATION_STATUS)
-    ind.set_status (appindicator.STATUS_ACTIVE)
-    ind.set_attention_icon ("connect_creating")
 
+def build_menu():
     # create a menu
     menu = gtk.Menu()
 
@@ -69,12 +67,28 @@ if __name__ == "__main__":
     separator.show()
     menu.append(separator)
 
+    menu_items = gtk.MenuItem("Refresh")
+    menu.append(menu_items)
+    menu_items.connect("activate", menuitem_response, "_refresh")
+    menu_items.show()
+
     menu_items = gtk.MenuItem("About")
     menu.append(menu_items)
     menu_items.connect("activate", menuitem_response, "_about")
     menu_items.show()
+    return menu
 
-    ind.set_menu(menu)
+
+if __name__ == "__main__":
+    ind = appindicator.Indicator ("sskmhlist",
+                                "gnome-netstatus-tx",
+                                appindicator.CATEGORY_APPLICATION_STATUS)
+    ind.set_status (appindicator.STATUS_ACTIVE)
+    ind.set_attention_icon ("connect_creating")
+
+    # create a menu
+    sshmenu = build_menu()
+    ind.set_menu(sshmenu)
 
 
     gtk.main()
