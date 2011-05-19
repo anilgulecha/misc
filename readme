@@ -71,3 +71,9 @@ glance is a single file utility. Copy the file to /usr/local/bin
 Setup keyboard shortcut F7, Add a custom shortcut for glance. Do this by running gnome-keyboard-properties.
 
 All done. Select a word and press F7 anytime to view in all it's defined glory.
+
+
+5. sshlist.py
+
+A sshmenu like alternative for appindicator menu. Move file into /usr/local/bin, add it to gnome startup list, and add ssh hosts into ~/.sshlist file. One item per line
+
