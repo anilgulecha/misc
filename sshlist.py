@@ -80,7 +80,7 @@ def build_menu():
 
 
 if __name__ == "__main__":
-    ind = appindicator.Indicator ("sskmhlist",
+    ind = appindicator.Indicator ("sshlist",
                                 "gnome-netstatus-tx",
                                 appindicator.CATEGORY_APPLICATION_STATUS)
     ind.set_status (appindicator.STATUS_ACTIVE)
