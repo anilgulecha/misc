@@ -13,6 +13,7 @@ import gobject
 import gtk
 import appindicator
 import os
+import pynotify
 
 def run_program(cmd):
     #returns (output, exit value)
@@ -37,6 +38,7 @@ http://www.gulecha.org""")
     elif buf == "_refresh":
         newmenu = build_menu()
         ind.set_menu(newmenu)
+        pynotify.Notification("sshlist refreshed","Menu list was refreshed from ~/.sshlist").show()
     else:
         print "gnome-terminal -x ssh " + buf
         run_program("gnome-terminal -x ssh " + buf)
