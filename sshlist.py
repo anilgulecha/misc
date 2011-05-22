@@ -9,11 +9,16 @@
 # 4. Launch sshlist.py
 # 5. Or better yet, add it to gnome startup programs list so it's run on login.
 
+# v0.1 - Initial push
+# v0.11 - Add a little polish.
+
 import gobject
 import gtk
 import appindicator
 import os
 import pynotify
+
+ver = "0.11"
 
 def run_program(cmd):
     #returns (output, exit value)
@@ -26,7 +31,7 @@ def menuitem_response(w, buf):
     if buf == "_about" :
         md = gtk.MessageDialog(None,0, gtk.MESSAGE_INFO,
              gtk.BUTTONS_OK)
-        md.set_markup("<b>sshlist v0.1</b>")
+        md.set_markup("<b>sshlist v%s</b>" % ver)
         md.format_secondary_markup("""A simple sshmenu like replacement for appindicator menu.
 
 To add items to menu, simple edit the file <i>.sshlist</i> in your home directory (one host per line). The line is directly appended to the ssh command.
@@ -85,6 +90,7 @@ if __name__ == "__main__":
     ind = appindicator.Indicator ("sshlist",
                                 "gnome-netstatus-tx",
                                 appindicator.CATEGORY_APPLICATION_STATUS)
+    ind.set_label("SSH")
     ind.set_status (appindicator.STATUS_ACTIVE)
     ind.set_attention_icon ("connect_creating")
 
