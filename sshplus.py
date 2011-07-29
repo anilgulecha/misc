@@ -39,6 +39,7 @@ import shlex
 _VERSION = "1.0"
 
 _SETTINGS_FILE = os.getenv("HOME") + "/.sshplus"
+_SSHMENU_FILE = os.getenv("HOME") + "/.sshmenu"
 
 _ABOUT_TXT = """A simple application starter as appindicator.
 
@@ -46,7 +47,7 @@ To add items to the menu, edit the file <i>.sshplus</i> in your home directory. 
 
 <tt>NAME|COMMAND|ARGS</tt>
 
-If the item is clicked in the menu, COMMAND with arguments ARGS will be executed. ARGS can be empty. To insert a separator, add a line which only contains "sep". Lines starting with "#" will be ignored. You can set an unclickable label with the prefix "label:".
+If the item is clicked in the menu, COMMAND with arguments ARGS will be executed. ARGS can be empty. To insert a separator, add a line which only contains "sep". Lines starting with "#" will be ignored. You can set an unclickable label with the prefix "label:". Items from sshmenu configuration will be automatically added.
 
 Example file:
 <tt><small>
@@ -72,7 +73,7 @@ def menuitem_response(w, item):
     elif item == '_refresh':
         newmenu = build_menu()
         ind.set_menu(newmenu)
-        pynotify.Notification("SSHplus refreshed", "Menu list was refreshed from %s" % _SETTINGS_FILE).show()
+        pynotify.Notification("SSHplus refreshed", "Menu list was refreshed from %s").show()
     elif item == '_quit':
         sys.exit(0)
     else:
@@ -108,7 +109,7 @@ def add_menu_item(menu, caption, item=None):
     menu.append(menu_item)
 
 def get_sshmenuconfig():
-    if not os.path.exists(os.getenv("HOME")+"/.sshmenu"):
+    if not os.path.exists(_SSHMENU_FILE):
         return None
     hostlist=open(os.getenv("HOME")+"/.sshmenu","r").read()
     smenutitle=[]
@@ -129,11 +130,9 @@ def get_sshmenuconfig():
     except:
         return None
 
-def build_menu():
+def get_sshplusconfig():
     if not os.path.exists(_SETTINGS_FILE):
-        show_help_dlg("<b>ERROR: No menu file found at default location:\n%s</b>\n\n%s" % \
-                (_SETTINGS_FILE, _ABOUT_TXT), error=True)
-        sys.exit(1)
+        return []
 
     app_list = []
     f = open(_SETTINGS_FILE, "r")
@@ -162,6 +161,15 @@ def build_menu():
                     print "The following line has errors and will be ignored:\n%s" % line
     finally:
         f.close()
+    return app_list
+
+def build_menu():
+    if not os.path.exists(_SETTINGS_FILE) and not os.path.exists(_SSHMENU_FILE) :
+        show_help_dlg("<b>ERROR: No .sshmenu or .sshplus file found in home directory</b>\n\n%s" % \
+             _ABOUT_TXT, error=True)
+        sys.exit(1)
+
+    app_list = get_sshplusconfig()
 
     #Add sshmenu config items if any
     sshmenuitems = get_sshmenuconfig()
