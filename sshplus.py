@@ -47,7 +47,7 @@ To add items to the menu, edit the file <i>.sshplus</i> in your home directory. 
 
 <tt>NAME|COMMAND|ARGS</tt>
 
-If the item is clicked in the menu, COMMAND with arguments ARGS will be executed. ARGS can be empty. To insert a separator, add a line which only contains "sep". Lines starting with "#" will be ignored. You can set an unclickable label with the prefix "label:". Items from sshmenu configuration will be automatically added.
+If the item is clicked in the menu, COMMAND with arguments ARGS will be executed. ARGS can be empty. To insert a separator, add a line which only contains "sep". Lines starting with "#" will be ignored. You can set an unclickable label with the prefix "label:". Items from sshmenu configuration will be automatically added (except nested items). To insert a nested menu, use the prefix "folder:menu name". Subsequent items will be inserted in this menu, until a line containing an empty folder name is found: "folder:". After that, subsequent items get inserted in the parent menu. That means that more than one level of nested menus can be created.
 
 Example file:
 <tt><small>
@@ -56,6 +56,12 @@ sep
 
 # this is a comment
 label:SSH connections
+# create a folder named "Home"
+folder:Home
+SSH Ex|gnome-terminal|-x ssh user@1.2.3.4
+# to mark the end of items inside "Home", specify and empty folder:
+folder:
+# this item appears in the main menu
 SSH Ex|gnome-terminal|-x ssh user@1.2.3.4
 
 label:RDP connections
@@ -73,9 +79,11 @@ def menuitem_response(w, item):
     elif item == '_refresh':
         newmenu = build_menu()
         ind.set_menu(newmenu)
-        pynotify.Notification("SSHplus refreshed", "Menu list was refreshed from %s").show()
+        pynotify.Notification("SSHplus refreshed", "Menu list was refreshed from %s" % _SETTINGS_FILE).show()
     elif item == '_quit':
         sys.exit(0)
+    elif item == 'folder':
+        pass
     else:
         print item
         os.spawnvp(os.P_NOWAIT, item['cmd'], [item['cmd']] + item['args'])
@@ -107,6 +115,7 @@ def add_menu_item(menu, caption, item=None):
         menu_item.set_sensitive(False)
     menu_item.show()
     menu.append(menu_item)
+    return menu_item
 
 def get_sshmenuconfig():
     if not os.path.exists(_SSHMENU_FILE):
@@ -147,6 +156,12 @@ def get_sshplusconfig():
                 app_list.append({
                     'name': 'LABEL',
                     'cmd': line[6:], 
+                    'args': ''
+                })
+            elif line.startswith('folder:'):
+                app_list.append({
+                    'name': 'FOLDER',
+                    'cmd': line[7:], 
                     'args': ''
                 })
             else:
@@ -190,14 +205,22 @@ def build_menu():
             })
 
     menu = gtk.Menu()
+    menus = [menu]
 
     for app in app_list:
         if app == "sep":
-            add_separator(menu)
+            add_separator(menus[-1])
+        elif app['name'] == "FOLDER" and not app['cmd']:
+            if len(menus) > 1:
+                menus.pop()
+        elif app['name'] == "FOLDER":
+            menu_item = add_menu_item(menus[-1], app['cmd'], 'folder')
+            menus.append(gtk.Menu())
+            menu_item.set_submenu(menus[-1])
         elif app['name'] == "LABEL":
-            add_menu_item(menu, app['cmd'], None)
+            add_menu_item(menus[-1], app['cmd'], None)
         else:
-            add_menu_item(menu, app['name'], app)
+            add_menu_item(menus[-1], app['name'], app)
 
     add_separator(menu)
     add_menu_item(menu, 'Refresh', '_refresh')
