@@ -79,6 +79,7 @@ def menuitem_response(w, item):
     elif item == '_refresh':
         newmenu = build_menu()
         ind.set_menu(newmenu)
+        pynotify.init("sshplus")
         pynotify.Notification("SSHplus refreshed", "Menu list was refreshed from %s" % _SETTINGS_FILE).show()
     elif item == '_quit':
         sys.exit(0)
