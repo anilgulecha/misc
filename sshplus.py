@@ -35,6 +35,7 @@ import os
 import pynotify
 import sys
 import shlex
+import re
 
 _VERSION = "1.0"
 
@@ -121,24 +122,61 @@ def add_menu_item(menu, caption, item=None):
 def get_sshmenuconfig():
     if not os.path.exists(_SSHMENU_FILE):
         return None
-    hostlist=open(os.getenv("HOME")+"/.sshmenu","r").read()
-    smenutitle=[]
-    smenuparams=[]
+    hostlist=open(_SSHMENU_FILE,"r").read()
+    lines = hostlist.split("\n")
+    lines.remove("items: ") #get rid of the first instance
+    app_list = []
+    
+    smflag=0     # Flag to ignore submenu title items
+    smtitle=""   # To hold the title while searching for parameters
+    smparams=""  # To hold parameters values
+
     try:
-        for line in hostlist.split("\n"):
-            if line[2:7] == "title":
-                smenutitle.append(line.split(":")[1])
-            if line[2:11] == "sshparams":
-                smenuparams.append(line.split(":")[1])
-        if len(smenutitle) ==  len(smenuparams):
-            if len(smenutitle) != 0:
-                return (smenutitle,smenuparams)
-        else:
-            if len(smenuparams) != 0:
-                return (smenuparams,smenuparams)
-        return None
+        for line in lines:
+            if re.search("title:",line):
+                if smflag == 1:
+                    smtitle=line.split(":")[1]
+                    continue
+                smflag=1
+                smtitle=line.split(":")[1]
+
+            elif re.search("sshparams:",line):
+                smparams=line.split(":")[1]
+                smflag=2
+
+            elif re.search("items:",line):
+                app_list.append({
+                    'name': 'FOLDER',
+                    'cmd': "SSHmenu",
+                    'args':"",
+                })
+                lastmenuindex = len(app_list) - 1
+
+            elif re.search("type: menu",line):
+                if smflag == 1:
+                    app_list[lastmenuindex]["cmd"] = smtitle
+                    app_list.append({
+                    'name': 'FOLDER',
+                    'cmd': "",
+                    'args':"",
+                })
+                    smflag = 0
+
+            if smflag == 2:
+                arglist = ("-x ssh " + smparams).split(" ")
+                for a in arglist:
+                    if a == "":
+                        arglist.remove("")
+                app_list.append({
+                    'name': smtitle,
+                    'cmd': 'gnome-terminal',
+                    'args': arglist,
+                 })
+                smflag=0
+        return app_list
     except:
-        return None
+        print "error in line:" + line
+        return []
 
 def get_sshplusconfig():
     if not os.path.exists(_SETTINGS_FILE):
@@ -188,27 +226,14 @@ def build_menu():
     app_list = get_sshplusconfig()
 
     #Add sshmenu config items if any
-    sshmenuitems = get_sshmenuconfig()
-    if sshmenuitems != None:
-        app_list.append("sep")
-        app_list.append({
-            'name': 'LABEL',
-            'cmd': "SSHmenu",
-            'args': ''
-        })
-        titles=sshmenuitems[0]
-        sshparams=sshmenuitems[1]
-        for i in range(len(titles)):
-            app_list.append({
-                'name': titles[i],
-                'cmd': "gnome-terminal",
-                'args': [n.replace("\n", "") for n in shlex.split("-x ssh " + sshparams[i])],
-            })
+    app_list2 = get_sshmenuconfig()
+    if app_list2 != []:
+        app_list2 = ["sep",{'name': 'LABEL','cmd': "SSHmenu",'args': ''}] + app_list2
 
     menu = gtk.Menu()
     menus = [menu]
-
-    for app in app_list:
+    print app_list + app_list2
+    for app in app_list + app_list2:
         if app == "sep":
             add_separator(menus[-1])
         elif app['name'] == "FOLDER" and not app['cmd']:
@@ -231,7 +256,7 @@ def build_menu():
     return menu
 
 if __name__ == "__main__":
-    ind = appindicator.Indicator("sshplus", "gnome-netstatus-tx",
+    ind = appindicator.Indicator("sshplu", "gnome-netstatus-tx",
                                  appindicator.CATEGORY_APPLICATION_STATUS)
     ind.set_label("Launch")
     ind.set_status(appindicator.STATUS_ACTIVE)
