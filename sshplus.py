@@ -228,12 +228,12 @@ def build_menu():
     #Add sshmenu config items if any
     app_list2 = get_sshmenuconfig()
     if app_list2 != []:
-        app_list2 = ["sep",{'name': 'LABEL','cmd': "SSHmenu",'args': ''}] + app_list2
+        app_list = app_list + ["sep",{'name': 'LABEL','cmd': "SSHmenu",'args': ''}] + app_list2
 
     menu = gtk.Menu()
     menus = [menu]
-    print app_list + app_list2
-    for app in app_list + app_list2:
+
+    for app in app_list:
         if app == "sep":
             add_separator(menus[-1])
         elif app['name'] == "FOLDER" and not app['cmd']:
