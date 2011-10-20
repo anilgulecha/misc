@@ -121,7 +121,7 @@ def add_menu_item(menu, caption, item=None):
 
 def get_sshmenuconfig():
     if not os.path.exists(_SSHMENU_FILE):
-        return None
+        return []
     hostlist=open(_SSHMENU_FILE,"r").read()
     lines = hostlist.split("\n")
     lines.remove("items: ") #get rid of the first instance
