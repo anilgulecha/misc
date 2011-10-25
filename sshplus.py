@@ -135,13 +135,13 @@ def get_sshmenuconfig():
         for line in lines:
             if re.search("title:",line):
                 if smflag == 1:
-                    smtitle=line.split(":")[1]
+                    smtitle=line.split(":", 1)[1]
                     continue
                 smflag=1
-                smtitle=line.split(":")[1]
+                smtitle=line.split(":", 1)[1]
 
             elif re.search("sshparams:",line):
-                smparams=line.split(":")[1]
+                smparams=line.split(":", 1)[1]
                 smflag=2
 
             elif re.search("items:",line):
