@@ -130,6 +130,7 @@ def get_sshmenuconfig():
     smflag=0     # Flag to ignore submenu title items
     smtitle=""   # To hold the title while searching for parameters
     smparams=""  # To hold parameters values
+    stackMenuIndex = []
 
     try:
         for line in lines:
@@ -150,11 +151,11 @@ def get_sshmenuconfig():
                     'cmd': "SSHmenu",
                     'args':"",
                 })
-                lastmenuindex = len(app_list) - 1
+                stackMenuIndex.append(len(app_list) - 1)
 
             elif re.search("type: menu",line):
                 if smflag == 1:
-                    app_list[lastmenuindex]["cmd"] = smtitle
+                    app_list[stackMenuIndex.pop()]["cmd"] = smtitle
                     app_list.append({
                     'name': 'FOLDER',
                     'cmd': "",
