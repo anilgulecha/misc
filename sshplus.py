@@ -32,7 +32,7 @@ import gobject
 import gtk
 import appindicator
 import os
-import pynotify
+import notify2
 import sys
 import shlex
 import re
@@ -80,8 +80,8 @@ def menuitem_response(w, item):
     elif item == '_refresh':
         newmenu = build_menu()
         ind.set_menu(newmenu)
-        pynotify.init("sshplus")
-        pynotify.Notification("SSHplus refreshed", "Menu list was refreshed from %s" % _SETTINGS_FILE).show()
+        notify2.init("sshplus")
+        notify2.Notification("SSHplus refreshed", "Menu list was refreshed from %s" % _SETTINGS_FILE).show()
     elif item == '_quit':
         sys.exit(0)
     elif item == 'folder':
